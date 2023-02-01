@@ -45,9 +45,9 @@ uint32_t GetTime();
 
 void task_temp()
 {
-#ifdef INTERMITTENT
+
      P1OUT = 0x01;
-#endif
+
     int temp;
 
     while(sample < 1000){
@@ -59,17 +59,17 @@ void task_temp()
         avg_temp /= sample;
         TRANSITION_TO(task_temp);
     }
-#ifdef INTERMITTENT
+
      P1OUT = 0x02;
-#endif
+
     while(1);
 }
 
 static void init_hw()
 {
-    //P3DIR = 0xFF;
+    P1DIR = 0xFF;
     msp_watchdog_disable();
-    //PM5CTL0 &= ~LOCKLPM5;
+    PM5CTL0 &= ~LOCKLPM5;
 }
 
 void init()

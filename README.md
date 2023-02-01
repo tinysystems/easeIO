@@ -28,11 +28,11 @@ The transformed code is then linked with the EaseIO runtime before burning on th
 ### How to run it?
 We provide the ready to run project for one of the benchmarks (FIR filter). Following are the steps to run the code. Please note that we use Code Composer Studio to run the project. 
 
-<ol>
-  <li>Select the [CCSProject](./CCSProject) folder as the workspace and launch</li>
-  <li>Copy the transformed file from [EASEIO-compiler/test](https://github.com/tinysystems/easeIO/tree/main/EaseIO-compiler/test) to the Benchmarks folder in the project</li>
-  <li> Just click the debug button. Now the project is ready to go.</li> 
-</ol>
+
+  1. Select the [CCSProject](./CCSProject) folder as the workspace and launch
+  2. Copy the transformed file from [EASEIO-compiler/test](https://github.com/tinysystems/easeIO/tree/main/EaseIO-compiler/test) to the Benchmarks folder in the project
+  3. Just click the debug button. Now the project is ready to go.
+
 ### Requirements
 
 Hardware Requirement:
