@@ -192,8 +192,8 @@ void task_filter()
 
 
        status =
-msp_copy_q15(&copyParams, &input_lea[samples], &circularBuffer[copyindex])       status =
-msp_fir_q15(&firParams, &circularBuffer[filterIndex], &result[samples])
+msp_copy_q15(&copyParams, &input_lea[samples], &circularBuffer[copyindex]);       status =
+msp_fir_q15(&firParams, &circularBuffer[filterIndex], &result[samples]);
        copyindex ^= FIR_LENGTH;
        filterIndex ^= FIR_LENGTH;
        samples += FIR_LENGTH;

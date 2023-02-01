@@ -282,7 +282,8 @@ public:
        transfd_code_writer.InsertText(call->getBeginLoc(), io_call_always_retval_template, true, true);
        }
    else if(argc == 2)
-        transfd_code_writer.InsertText(call->getBeginLoc(), argv[1], true, true);
+        //string res = ;
+        transfd_code_writer.InsertText(call->getBeginLoc(), argv[1]+";\n\t", true, true);
   }
  }
 };
