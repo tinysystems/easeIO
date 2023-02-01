@@ -30,8 +30,8 @@ Import the code in CCSStudio
 
 <ol>
   <li>Start Code Composer Studio Launcher</li>
-  <li>Select the [CCSProject](https://github.com/tinysystems/easeIO/tree/main/CCSProject) folder as the workspace and launch</li>
-  <li>Copy the transformed file from [EASEIO-compiler/test](https://github.com/tinysystems/easeIO/tree/main/EaseIO-compiler/test) to the Benchmarks folder in the project</li>
+  <li>Select the .[CCSProject].(https://github.com/tinysystems/easeIO/tree/main/CCSProject) folder as the workspace and launch</li>
+  <li>Copy the transformed file from .[EASEIO-compiler/test].(https://github.com/tinysystems/easeIO/tree/main/EaseIO-compiler/test) to the Benchmarks folder in the project</li>
   <li>Now the project is ready to go. Just click the debug button.</li> 
 </ol>
 
