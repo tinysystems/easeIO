@@ -28,7 +28,12 @@ Compiler-frontend alone cannot do the job completely. EaseIO runtime is designed
 ### How to run it?
 Import the code in CCSStudio
 
-@Eren please list down steps for importing the project in CCSstudio
+<ol>
+  <li>Start Code Composer Studio Launcher</li>
+  <li>Select the [CCSProject](https://github.com/tinysystems/easeIO/tree/main/CCSProject) folder as the workspace and launch</li>
+  <li>Copy the transformed file from [EASEIO-compiler/test](https://github.com/tinysystems/easeIO/tree/main/EaseIO-compiler/test) to the Benchmarks folder in the project</li>
+  <li>Now the project is ready to go. Just click the debug button.</li> 
+</ol>
 
 <!---
 ## Getting Started
