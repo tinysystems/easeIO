@@ -29,10 +29,11 @@ Import the code in CCSStudio
 
 @Eren please list down steps for importing the project in CCSstudio
 
+<!---
 ## Getting Started
 
 For ease-of-use, we have transformed the code for Single timely operation. 
-
+-->
 ## Basic Application development with EaseIO
 ```c
 __nv  uint64_t exe_number = 0;

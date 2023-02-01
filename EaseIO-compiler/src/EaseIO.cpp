@@ -37,14 +37,14 @@ string op_name_TS_decls = "__nv bool op_TS[*length*];\n";
 
 int flag_itr = 0,TS_itr=0;
 
-string flag_decl_template = "__nv bool flag[*length*]";
+string flag_decl_template = "__nv bool flag[*length*];";
 
 string io_call_single_template = "\tif(!flag[*f_itr*]) { \n\t*op_name*;\n\t flag[*f_itr*] = SET;\n\t}";
 string io_call_single_retval_template = "if(!flag[*f_itr*]) { *retval* = *op_name*;\n\t flag[*f_itr*] = SET;\n\t}";
 
 string io_call_always_retval_template = "\n\t*retval* = *op_name*;\n\t";
 
-string io_call_timely_retval_template = "\n\tif(!flag[*f_itr*] && (GetTime() - op_TS[*t_itr*]) < *EXPIRE_TIME*)) {\n\t *retval* = *op_name*;\n\t op_TS[*t_itr*] = GetTime();\n\t *retval*_priv = *retval*;\n\t flag[*f_itr*] = SET;\n\t}\n\t else { \n\t *retval* = *retval*_priv;\n\t }";
+string io_call_timely_retval_template = "\n\tif(!flag[*f_itr*] && (GetTime() - op_TS[*t_itr*]) < *EXPIRE_TIME*) {\n\t *retval* = *op_name*;\n\t op_TS[*t_itr*] = GetTime();\n\t *retval*_priv = *retval*;\n\t flag[*f_itr*] = SET;\n\t}\n\t else { \n\t *retval* = *retval*_priv;\n\t }";
 
 
 string io_call_timely_template = "\n\tif(!flag[*f_itr*] && (GetTime() - op_TS[*t_itr*]) < *EXPIRE_TIME*)) {\n\t *op_name*;\n\t op_TS[*t_itr*] = GetTime();\n\t *retval*_priv = *retval*;\n\t flag[*f_itr*] = SET;\n\t}\n\t else { \n\t*retval* = *retval*_priv;\n\t}";
