@@ -14,7 +14,7 @@
 #include "libmsp/mem.h"
 #include "inputs/conv2.h"
 
-#define INTERMITTENT
+//#define INTERMITTENT  uncomment to run intermittently
 
 
 #define MEM_SIZE 0x4
@@ -115,7 +115,9 @@ __nv int dma_data_dst[ARR_SIZE] = {[0 ... ARR_SIZE - 1] = 2};
 
 void task_init()
 {
-    P1OUT = 0x01;
+#ifdef INTERMITTENT
+     P1OUT = 0x01;
+#endif
 
     	if(!DMA_Data.DMA_Privatization[DMACounter-1])
     	{
@@ -229,15 +231,22 @@ void task_done()
     	     while(exe_number<1000){
         TRANSITION_TO(task_init);
     }
-    P1OUT = 0x02;
+#ifdef INTERMITTENT
+     P1OUT = 0x02;
+#endif
+
     while(1);
 }
 
 static void init_hw()
 {
-    P1DIR = 0xFF;
+
     msp_watchdog_disable();
+#ifdef INTERMITTENT
+    P1DIR = 0xFF;
     PM5CTL0 &= ~LOCKLPM5;
+#endif
+
 }
 
 void init()
