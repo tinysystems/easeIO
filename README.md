@@ -54,6 +54,7 @@ __nv  uint64_t exe_number = 0;
 
 void task_temp()
 {
+    P1OUT = 0x01;
     int temp;
 
     while(sample < 1000){
@@ -65,7 +66,7 @@ void task_temp()
         avg_temp /= sample;
         TRANSITION_TO(task_init);
     }
-
+    P1OUT = 0x02;
     while(1);
 }
 
