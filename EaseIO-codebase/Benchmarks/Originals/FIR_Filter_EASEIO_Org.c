@@ -163,8 +163,8 @@ void task_filter()
    while (samples < SIGNAL_LENGTH) {
 
 
-       status = call_IO("Always", msp_copy_q15(&copyParams, &input_lea[samples], &circularBuffer[copyindex]));
-       status = call_IO("Always", msp_fir_q15(&firParams, &circularBuffer[filterIndex], &result[samples]));
+       call_IO("Always", status, msp_copy_q15(&copyParams, &input_lea[samples], &circularBuffer[copyindex]));
+       status = call_IO("Always", status, msp_fir_q15(&firParams, &circularBuffer[filterIndex], &result[samples]));
 
        copyindex ^= FIR_LENGTH;
        filterIndex ^= FIR_LENGTH;
