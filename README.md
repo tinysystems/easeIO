@@ -19,13 +19,15 @@ You canperform transformation using the following steps.
 </ol>
 
 <mark>Note:</mark> easeIO-c.sh contains path to the source file that the user wants to parse and location of the destination folder where the output will be written. 
-You can change the path of the LLVM folder and benchmark folders as per location on you machine. However, please make sure you have sperate folders for <mark>Originals</mark> and <mark>Transformed</mark>. EaseIO is programmed to keep these two files separate for the ease of use. So the folder for transformed codes should on the same level and path (similar to how it is in the given code structure).
+You can change the path of the LLVM folder and benchmark folders as per location on you machine. However, please make sure you have sperate folders for <b>Originals</b> and <b>Transformed</b>. EaseIO is programmed to keep these two files separate for the ease of use. So the folder for transformed codes should on the same level and path (similar to how it is in the given code structure).
 
-#### Runtime
+## Runtime
 Compiler-frontend alone cannot do the job completely. EaseIO runtime is designed to complement the frontend.  
 
-##### How to run it?
-Import the code 
+### How to run it?
+Import the code in CCSStudio
+
+@Eren please list down steps for importing the project in CCSstudio
 <ol>
   <li>Use the llvm-build.sh to download and compile the llvm-9.0.1.</li>
   <li>Afterwards, put the compiler frontend code in the /llvm/tools/clang/tools/easeIO folder</li>
@@ -33,17 +35,19 @@ Import the code
   <li>Now run easeIO.sh script to run the transformation for all the codes.</li>
 </ol>
 
-### What can I reproduce
+## What can I reproduce
 
-Single timely operation
+For ease-of-use, we have transformed the code for Single timely operation. 
 
 
-### Acknowledgements {#custom-id}
+
 
 ### Copyright
 MIT License. See the [license](https://github.com/tinysystems/easeIO/blob/main/LICENSE.txt)file for details.
  
 <!---
+
+### Acknowledgements {#custom-id}
 Software dependencies
 LLVM 9.0.1
 
