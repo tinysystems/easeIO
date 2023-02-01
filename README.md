@@ -1,15 +1,15 @@
 
-### EaseIO Overview {#custom-id}
+#EaseIO Overview
 This repository contains the code associated with the paper #19 "Efficient and Safe I/O Operations for Intermittent Systems".
 
 EaseIO is a novel programming model that introduces re-execution semantics of IO operations for intermittent computing. Re-executed IO operations in intermittent systems' tasks might lead to memory inconsistencies and high energy consumption. EaseIO offers new interfaces to call IO functions to overcome memory inconsistencies and save energy. Programmers can call IO functions with re-execution semantics annotations thanks to the EaseIO interfaces. 
-### Respository structure
+# Respository structure
 <p>EaseIO consists of two main components EaseIO compiler front-end and EaseIO runtime.</p>
  
-#### Compiler-frontend
+## Compiler-frontend
 EaseIO compiler-frontend is responsible for performing semantic analysis to inject appropriate code in the original file. 
 
-##### How to run it?
+#### How to run it?
 You perform transformation using the following steps.
 <ol>
   <li>Use the llvm-build.sh to download and compile the llvm-9.0.1.</li>
