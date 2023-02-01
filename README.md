@@ -54,11 +54,11 @@ __nv  uint64_t exe_number = 0;
 
 void task_temp()
 {
-    P1OUT = 0x01;
+    
     int temp;
 
     while(sample < 1000){
-
+        P1OUT = 0x01;
         call_IO("Timely", 10000, temp, msp_sample_temperature());
 
         avg_temp = avg_temp*sample + temp;
@@ -72,7 +72,7 @@ void task_temp()
 
 ```
 We keep track of the application execution via LEDs on P1.0 (red) and P1.1 (green). During the whole application, the red LED turns on. When the application is completed, the red turns off, and the green LED turns on. 
-To intermittently run the application,  <em> INTERMITTENT </em> macro should be defined. The LEDs run the same logic during the intermittent execution. But when the red LED starts blinking when the application is completed. The reason for this situation is that power failures still keep occurring.
+To intermittently run the application,  <em> INTERMITTENT </em> macro should be defined. The LEDs run the same logic during the intermittent execution. 
 ## Copyright
 MIT License. See the [license](https://github.com/tinysystems/easeIO/blob/main/LICENSE.txt)file for details.
  
