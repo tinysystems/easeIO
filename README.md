@@ -35,10 +35,11 @@ Import the code in CCSStudio
   <li>Now run easeIO.sh script to run the transformation for all the codes.</li>
 </ol>
 
-## What can I reproduce
+## Getting Started
 
 For ease-of-use, we have transformed the code for Single timely operation. 
 
+## Basic Application development with EaseIO
 
 ### Copyright
 MIT License. See the [license](https://github.com/tinysystems/easeIO/blob/main/LICENSE.txt)file for details.
