@@ -23,18 +23,25 @@ You canperform transformation using the following steps.
 You can change the path of the LLVM folder and benchmark folders as per location on your machine. However, please make sure you have sperate folders for <b>Originals</b> and <b>Transformed</b>. EaseIO is programmed to keep these two files separate for the ease of use. So the folder for transformed codes should on the same level and path (similar to how it is in the given code structure).
 
 ## Runtime
-Compiler-frontend alone cannot do the job completely. EaseIO runtime is designed to complement the frontend.  
+The transformed code is then linked with the EaseIO runtime before burning on the microcontroller.
 
 ### How to run it?
-Import the code in CCSStudio
+We provide the ready to run project for one of the benchmarks (FIR filter). Following are the steps to run the code. Please note that we use Code Composer Studio to run the project. 
 
 <ol>
-  <li>Start Code Composer Studio Launcher</li>
   <li>Select the [CCSProject](./CCSProject) folder as the workspace and launch</li>
-  <li>Copy the transformed file from .[EASEIO-compiler/test].(https://github.com/tinysystems/easeIO/tree/main/EaseIO-compiler/test) to the Benchmarks folder in the project</li>
-  <li>Now the project is ready to go. Just click the debug button.</li> 
+  <li>Copy the transformed file from [EASEIO-compiler/test](https://github.com/tinysystems/easeIO/tree/main/EaseIO-compiler/test) to the Benchmarks folder in the project</li>
+  <li> Just click the debug button. Now the project is ready to go.</li> 
 </ol>
+### Requirements
 
+Hardware Requirement:
+- MSP430FR5969 board
+
+Software Requirements
+- LLVM9.0.1
+
+We have tested our benchmarks on Ubuntu20.04 linux environment. 
 <!---
 ## Getting Started
 

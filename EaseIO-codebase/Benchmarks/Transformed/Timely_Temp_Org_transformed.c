@@ -20,7 +20,7 @@ __nv uint8_t *data_dest[MEM_SIZE];
 __nv unsigned int data_size[MEM_SIZE];
 __nv bool op_TS[2];
 
-__nv bool flag[2]
+__nv bool flag[2];
 
 __nv uint64_t sample_priv;
 __nv volatile uint16_t avg_temp_priv;
@@ -74,7 +74,7 @@ void task_temp()
 
        
 
-        	if(!flag[0] && (GetTime() - op_TS[0]) < 10000)) {
+        	if(!flag[0] && (GetTime() - op_TS[0]) < 10000) {
         	 temp = msp_sample_temperature();
         	 op_TS[0] = GetTime();
         	 temp_priv = temp;
