@@ -19,7 +19,7 @@ You canperform transformation using the following steps.
 </ol>
 
 Note: easeIO-c.sh
-You can change the path of the LLVM folder and benchmark folders as per location on you machine. However, please make sure you have sperate folders for === Originals === and ==Transformed==. EaseIO is programmed to keep these two files separate for the ease of use. So the folder for transformed codes should on the same level and path (similar to how it is in the given code structure).
+You can change the path of the LLVM folder and benchmark folders as per location on you machine. However, please make sure you have sperate folders for ==Originals== and ==Transformed==. EaseIO is programmed to keep these two files separate for the ease of use. So the folder for transformed codes should on the same level and path (similar to how it is in the given code structure).
 
 #### Runtime
 Compiler-frontend alone cannot do the job completely. EaseIO runtime is designed to complement the frontend.  
