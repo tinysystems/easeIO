@@ -35,11 +35,25 @@ For ease-of-use, we have transformed the code for Single timely operation.
 
 ## Basic Application development with EaseIO
 ```c
-int main() {
-  int y = SOME_MACRO_REFERENCE;
-  int x = 5 + 6;
-  cout << "Hello World! " << x << std::endl();
+__nv  uint64_t exe_number = 0;
+
+void task_temp()
+{
+    int temp;
+
+    while(sample < 1000){
+
+        call_IO("Timely", 10000, temp, msp_sample_temperature());
+
+        avg_temp = avg_temp*sample + temp;
+        sample ++;
+        avg_temp /= sample;
+        TRANSITION_TO(task_init);
+    }
+
+    while(1);
 }
+
 ```
 
 ### Copyright
