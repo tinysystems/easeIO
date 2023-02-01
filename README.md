@@ -42,7 +42,7 @@ int main() {
 }
 ```
 
-### Copyright
+## Copyright
 MIT License. See the [license](https://github.com/tinysystems/easeIO/blob/main/LICENSE.txt)file for details.
  
 <!---
