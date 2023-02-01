@@ -24,9 +24,8 @@ __nv bool flag[2];
 
 __nv uint64_t sample_priv;
 __nv volatile uint16_t avg_temp_priv;
-__nv int expire_count_priv;
-__nv int [30] expiration_array_priv;
 
+void clear_flags(){  flag[0] = FALSE;flag[1] = FALSE; }
 
 void clear_isDirty() {}
 
@@ -53,7 +52,6 @@ uint32_t GetTime();
 
 void task_temp()
 {
-#
 	if(!DMA_Data.DMA_Privatization[DMACounter-1])
 	{
 	
@@ -66,7 +64,8 @@ void task_temp()
 	sample = sample_priv;
 	avg_temp = avg_temp_priv;
 	}
-	 ifdef INTERMITTENT
+	 
+#ifdef INTERMITTENT
      P1OUT = 0x01;
 #endif
     int temp;
@@ -119,20 +118,7 @@ INIT_FUNC(init)
 
 uint32_t GetTime()
 {
- 
-    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-    	{
-    	
-    	expire_count_priv = expire_count;
-    	expiration_array_priv = expiration_array; 
-    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-    	}
-    	 else {
-    	
-    	expire_count = expire_count_priv;
-    	expiration_array = expiration_array_priv;
-    	}
-    	    if (expire_count == 30)
+    if (expire_count == 30)
         expire_count = 0;
     expire_count++;
     return expiration_array[expire_count];

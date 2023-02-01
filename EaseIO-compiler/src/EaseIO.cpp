@@ -61,6 +61,7 @@ string io_block_end_timely_retval_template = "\nt op_TS[*t_itr*] = GetTime();\n\
 string private_var_list = "";
 
 string private_var_template = "__nv *type* *var_name*_priv;\n";
+string private_var_arr_template = "__nv *type* *var_name*_priv *len*;\n";
 
 string DMA_var_priv_template_if = "\n\t*var_name*_priv = *var_name*;";
 
@@ -70,7 +71,7 @@ string DMA_var_priv_func_start_template = "\n\tif(!DMA_Data.DMA_Privatization[DM
 
 string DMA_var_priv_func_end_template = "\n\tif(!DMA_Data.DMA_Privatization[DMACounter-1]){ \n\tDMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;\n\t} \n\t else {}\n\t ";
 
-
+string clear_flags = "void clear_flags(){  *flags* }";
 
 typedef struct 
 {
@@ -106,7 +107,7 @@ static cl::OptionCategory MatcherSampleCategory("EaseIO-Compiler");
 
 
 string getAllGlobalVariables(){
-   stringstream f_itr,t_itr; string f_temp,t_temp;
+   stringstream f_itr,t_itr; string f_temp,f_temp2, t_temp;
    f_itr<<(flag_itr+1);
    f_itr>>f_temp;
    t_itr<<(TS_itr+1);
@@ -123,8 +124,15 @@ string getAllGlobalVariables(){
      replaceAll(flag_decl_template,"*length*",f_temp);
      final_res = final_res + flag_decl_template+"\n";
    }
-   
-   return final_res+"\n"+private_var_list;
+ 
+
+   string s ="";
+   for (int i=0;i<=flag_itr;i++){
+        s+="flag["+std::to_string(i)+"] = FALSE;";
+   }
+     replaceAll(clear_flags,"*flags*",s);
+
+   return final_res+"\n"+private_var_list+"\n"+clear_flags;
 }
 
 int extractCallArguments(const CallExpr *call, string *argv){
@@ -170,6 +178,7 @@ void replaceArgumentsInTimelyRetValTemplate(string *argv, string &io_call_timely
    replaceAll(io_call_timely_retval_template,"*EXPIRE_TIME*",argv[1]);
    replaceAll(io_call_timely_retval_template,"*retval*",argv[2]);
    replaceAll(io_call_timely_retval_template,"*op_name*",argv[3]);
+   //private_var_list+=
 }
 
 void replaceArgumentsInTimelyTemplate(string *argv, string &io_call_timely_retval_template, int size){
@@ -371,7 +380,7 @@ public:
         
         dma_priv = getDMAPrivCodeString(functionList, sizeOfFuncList, funcName); 
         DMA_func_start = func->getBody()->getBeginLoc().getLocWithOffset(3);
-        transfd_code_writer.InsertText(func->getBody()->getBeginLoc().getLocWithOffset(3), dma_priv, true, true); 
+        transfd_code_writer.InsertText(func->getBody()->getBeginLoc().getLocWithOffset(1), dma_priv, true, true); 
         }         
         return true;     
     }     
@@ -405,12 +414,24 @@ private:
     	   for(int j=0; j < arr[i].sizeOfVarList ;j++){
       	        res_if += DMA_var_priv_template_if;
       	        res_else += DMA_var_priv_template_else;
-      	        res_priv = private_var_template;
-
+      	        
     		replaceAll(res_if,"*var_name*",arr[i].variableList[j]);
 		replaceAll(res_else,"*var_name*",arr[i].variableList[j]);
-		replaceAll(res_priv,"*var_name*",arr[i].variableList[j]);
-		replaceAll(res_priv,"*type*",arr[i].datatypes[j]);
+		if(arr[i].datatypes[j].find("[")!=string::npos){
+		res_priv = private_var_arr_template;
+		errs()<< "type "<<arr[i].datatypes[j].substr(arr[i].datatypes[j].find(" ")+arr[i].datatypes[j].length())<<"\n";
+       	replaceAll(res_priv,"*type*",arr[i].datatypes[j]);
+       	replaceAll(res_priv,"*len*",arr[i].datatypes[j].substr(arr[i].datatypes[j].find(" ")+arr[i].datatypes[j].length()));       	
+       	
+		}
+		else{
+      	        res_priv = private_var_template;
+             	replaceAll(res_priv,"*type*",arr[i].datatypes[j]);
+      	        }
+                replaceAll(res_priv,"*var_name*",arr[i].variableList[j]);
+		
+
+		
 		found = private_var_list.find(res_priv);
 		if (found==std::string::npos)
 		   private_var_list += res_priv;	
@@ -528,7 +549,8 @@ public:
   static bool find(FunctionDecl *CandidateFunction) {
     GlobalVariableFinder GVFinder;
     GVFinder.TraverseDecl(CandidateFunction);
-    if(GVFinder.Found){
+    string funcName = CandidateFunction->getNameInfo().getName().getAsString();
+    if(GVFinder.Found && funcName.find("task_")!= std::string::npos){
      /*Store the list of all global variables accessed in the function*/
       functionList[sizeOfFuncList].funcName = CandidateFunction->getNameInfo().getName().getAsString();
       functionList[sizeOfFuncList].isVisited = false;
