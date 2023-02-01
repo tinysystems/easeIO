@@ -21,7 +21,22 @@ __nv uint8_t *data_src[MEM_SIZE];
 __nv uint8_t *data_dest[MEM_SIZE];
 __nv unsigned int data_size[MEM_SIZE];
 
-/**global_variables*/
+__nv bool op_TS[2];
+
+__nv bool flag[6]
+
+__nv volatile int temperature_priv;
+__nv volatile int humidity_priv;
+__nv int filter_priv;
+__nv int filters_priv;
+__nv msp_status status_priv;
+__nv int relu_divider_priv;
+__nv int relu_counter_priv;
+__nv int fc_parse_priv;
+__nv int fc_parses_priv;
+__nv int fc_part_priv;
+__nv uint64_t exe_number_priv;
+
 
 
 void clear_isDirty() {}
@@ -128,13 +143,43 @@ void task_init()
 
 void task_sense()
 {
-    call_IO("Single", capture());
+ 
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+    	{
+    	
+    	temperature_priv = temperature;
+    	humidity_priv = humidity; 
+    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	}
+    	 else {
+    	
+    	temperature = temperature_priv;
+    	humidity = humidity_priv;
+    	}
+    	   
+	if(!flag[0]) { 
+    	capture();
+    	 flag[0] = SET;
+    	}
+   
 
-    IO_Block_begin("Single");
-	call_IO("Timely", 10000, temperature, msp_sample_temperature());
-        call_IO("Always", humidity, msp_sample_temperature());
-    IO_Block_end();
+    	if(!flag[1]) { 
 
+		if(!flag[2] && (GetTime() - op_TS[0]) < 10000)) {
+		 temperature = msp_sample_temperature();
+		 op_TS[0] = GetTime();
+		 temperature_priv = temperature;
+		 flag[2] = SET;
+		}
+		 else { 
+		 temperature = temperature_priv;
+		 }       
+
+        	humidity = msp_sample_temperature();
+        	   
+
+    	flag[1] = SET;
+    	}
     TRANSITION_TO(task_dnn_init);
 }
 
@@ -147,13 +192,31 @@ void task_dnn_init()
 
     EASEIO_DMA_copy((uint32_t)(&input), (uint32_t)(inputBuffer) , IMAGE_LENGTH);
 
+	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	} 
+	 else {}
+	 
     TRANSITION_TO(task_convol);
 }
 
 void task_convol()
 {
 
-    /* set the filter coff. and order. if all filters are done goto relu */
+
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+    	{
+    	
+    	filter_priv = filter;
+    	filters_priv = filters; 
+    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	}
+    	 else {
+    	
+    	filter = filter_priv;
+    	filters = filters_priv;
+    	}
+    	     /* set the filter coff. and order. if all filters are done goto relu */
     if(filter < filters){
         filter++;
         TRANSITION_TO(task_convol_mul);
@@ -166,46 +229,99 @@ void task_convol()
 void task_convol_mul()
 {
 
-    msp_fir_q15_params firParams;
+
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+    	{
+    	
+    	filter_priv = filter;
+    	status_priv = status; 
+    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	}
+    	 else {
+    	
+    	filter = filter_priv;
+    	status = status_priv;
+    	}
+    	     msp_fir_q15_params firParams;
     msp_fill_q15_params fillParams;
     msp_copy_q15_params copyParams;
 
-    IO_Block_begin("Single");
+   
 
+    	if(!flag[3]) { 
        EASEIO_DMA_copy((uint32_t)(inputBuffer+ (filter-1)*(IMAGE_LENGTH/2)), (uint32_t) &input_lea, IMAGE_LENGTH/2);
 
+	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	} 
+	 else {}
+	 
        EASEIO_DMA_copy( (uint32_t) &FILTER_COEFFS_EX1, (uint32_t) &filterCoeffs, sizeof(filterCoeffs));
 
+	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	} 
+	 else {}
+	 
        firParams.length = IMAGE_LENGTH;
        firParams.tapLength = COEFF_LENTH;
        firParams.coeffs = filterCoeffs;
        firParams.enableCircularBuffer = false;
 
-       call_IO("Always", status, msp_fir_q15(&firParams, &input_lea, &result));
-       msp_checkStatus(status);
+      
+
+       	humidity = msp_sample_temperature();
+       	       msp_checkStatus(status);
 
        EASEIO_DMA_copy( (uint32_t) &result,(uint32_t) (tempBuffer+ (filter-1)*(IMAGE_LENGTH/2)), IMAGE_LENGTH/2);
 
-    IO_Block_end();
+	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	} 
+	 else {}
+	 
+   
 
+    	flag[3] = SET;
+    	}
 
-    IO_Block_begin("Single");
+   
 
+    	if(!flag[4]) { 
        msp_matrix_add_q15_params addParams;
 
        EASEIO_DMA_copy((uint32_t)(tempBuffer+ (filter-1)*(IMAGE_LENGTH/2)), (uint32_t) &input_lea, IMAGE_LENGTH/2);
 
-       EASEIO_DMA_copy((uint32_t)(&conv2_wm+ (filter-1)*(IMAGE_LENGTH/2)), (uint32_t) &biasBuffer, IMAGE_LENGTH/2); // used conv2_mv as bias
+	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	} 
+	 else {}
+	 
+       EASEIO_DMA_copy((uint32_t)(&conv2_wm+ (filter-1)*(IMAGE_LENGTH/2)), (uint32_t) &biasBuffer, IMAGE_LENGTH/2); 
+       	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+       	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+       	} 
+       	 else {}
+       	 // used conv2_mv as bias
 
        addParams.cols = IMAGE_LENGTH/2;
        addParams.rows = 1;
-       call_IO("Always", status, msp_matrix_add_q15(&addParams, &input_lea, &biasBuffer, &result));
-       msp_checkStatus(status);
+      
+
+       	humidity = msp_sample_temperature();
+       	       msp_checkStatus(status);
 
        EASEIO_DMA_copy( (uint32_t) &result,(uint32_t) (outputBuffer+ (filter-1)*(IMAGE_LENGTH/2)), IMAGE_LENGTH/2);
 
-    IO_Block_end();
+	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	} 
+	 else {}
+	 
+   
 
+    	flag[4] = SET;
+    	}
     TRANSITION_TO(task_convol);
 }
 
@@ -213,7 +329,20 @@ void task_convol_mul()
 void task_relu_div()
 {
 
-    if(relu_divider < relu_counter){
+
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+    	{
+    	
+    	relu_divider_priv = relu_divider;
+    	relu_counter_priv = relu_counter; 
+    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	}
+    	 else {
+    	
+    	relu_divider = relu_divider_priv;
+    	relu_counter = relu_counter_priv;
+    	}
+    	     if(relu_divider < relu_counter){
         relu_divider++;
         TRANSITION_TO(task_relu);
     }
@@ -225,7 +354,18 @@ void task_relu_div()
 void task_relu()
 {
 
-    for( int jj = 0; jj < IMAGE_LENGTH/4; jj++) {
+
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+    	{
+    	
+    	relu_divider_priv = relu_divider; 
+    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	}
+    	 else {
+    	
+    	relu_divider = relu_divider_priv;
+    	}
+    	     for( int jj = 0; jj < IMAGE_LENGTH/4; jj++) {
 
         _q15 max = outputBuffer[jj + (relu_divider - 1)*(IMAGE_LENGTH/4)];
         outputBuffer[jj] = (F_LT(max, _Q15(0.0))) ? _Q15(0.0) : max;
@@ -239,7 +379,22 @@ void task_relu()
 void task_fc()
 {
 
-    if(fc_parse < fc_parses){
+
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+    	{
+    	
+    	fc_parse_priv = fc_parse;
+    	fc_parses_priv = fc_parses;
+    	fc_part_priv = fc_part; 
+    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	}
+    	 else {
+    	
+    	fc_parse = fc_parse_priv;
+    	fc_parses = fc_parses_priv;
+    	fc_part = fc_part_priv;
+    	}
+    	     if(fc_parse < fc_parses){
 
         fc_part++;
 
@@ -252,7 +407,22 @@ void task_fc()
 void task_fc_mul()
 {
 
-    msp_matrix_mpy_q15_params mpyParams;
+
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+    	{
+    	
+    	fc_part_priv = fc_part;
+    	fc_parse_priv = fc_parse;
+    	status_priv = status; 
+    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	}
+    	 else {
+    	
+    	fc_part = fc_part_priv;
+    	fc_parse = fc_parse_priv;
+    	status = status_priv;
+    	}
+    	     msp_matrix_mpy_q15_params mpyParams;
 
     mpyParams.srcACols = IMAGE_LENGTH/2;
     mpyParams.srcARows = 1;
@@ -261,10 +431,22 @@ void task_fc_mul()
 
     EASEIO_DMA_copy((uint32_t)(outputBuffer + (fc_part-1)*(IMAGE_LENGTH/2)), (uint32_t) &input_lea, IMAGE_LENGTH/2);
 
-    EASEIO_DMA_copy((uint32_t)(&fc2_w + (fc_parse)*IMAGE_LENGTH + (fc_part-1)*(IMAGE_LENGTH/2)), (uint32_t) &biasBuffer, IMAGE_LENGTH/2); // used conv2_mv as bias
+	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	} 
+	 else {}
+	 
+    EASEIO_DMA_copy((uint32_t)(&fc2_w + (fc_parse)*IMAGE_LENGTH + (fc_part-1)*(IMAGE_LENGTH/2)), (uint32_t) &biasBuffer, IMAGE_LENGTH/2); 
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+    	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	} 
+    	 else {}
+    	 // used conv2_mv as bias
 
-    call_IO("Always", status, msp_matrix_mpy_q15(&mpyParams, &input_lea, &biasBuffer, &result));
+   
 
+    	humidity = msp_sample_temperature();
+    	
     msp_checkStatus(status);
 
 
@@ -272,6 +454,11 @@ void task_fc_mul()
     if(fc_part < 1){
       EASEIO_DMA_copy( (uint32_t) &result,(uint32_t) (temp), 1);
 
+	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	} 
+	 else {}
+	 
     }else{
         inputBuffer[fc_parse] = result[0] + temp;
         fc_part = 0;
@@ -290,7 +477,18 @@ void task_inference()
 void task_send()
 {
 
-    for(int volatile j =0; j<1000; j++){
+
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+    	{
+    	
+    	exe_number_priv = exe_number; 
+    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	}
+    	 else {
+    	
+    	exe_number = exe_number_priv;
+    	}
+    	     for(int volatile j =0; j<1000; j++){
 
      }
 

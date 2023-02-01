@@ -18,7 +18,15 @@
 __nv uint8_t *data_src[MEM_SIZE];
 __nv uint8_t *data_dest[MEM_SIZE];
 __nv unsigned int data_size[MEM_SIZE];
-/**global_variables*/
+__nv bool op_TS[2];
+
+__nv bool flag[2]
+
+__nv uint64_t sample_priv;
+__nv volatile uint16_t avg_temp_priv;
+__nv int expire_count_priv;
+__nv int [30] expiration_array_priv;
+
 
 void clear_isDirty() {}
 
@@ -47,12 +55,34 @@ uint32_t GetTime();
 
 void task_temp()
 {
-    int temp;
+ 
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+    	{
+    	
+    	sample_priv = sample;
+    	avg_temp_priv = avg_temp; 
+    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	}
+    	 else {
+    	
+    	sample = sample_priv;
+    	avg_temp = avg_temp_priv;
+    	}
+    	    int temp;
 
     while(sample < 1000){
 
-        call_IO("Timely", 10000, temp , msp_sample_temperature());
+       
 
+        	if(!flag[0] && (GetTime() - op_TS[0]) < 10000)) {
+        	 temp = msp_sample_temperature();
+        	 op_TS[0] = GetTime();
+        	 temp_priv = temp;
+        	 flag[0] = SET;
+        	}
+        	 else { 
+        	 temp = temp_priv;
+        	 }
         avg_temp = avg_temp*sample + temp;
         sample ++;
         avg_temp /= sample;
@@ -84,7 +114,20 @@ INIT_FUNC(task_init)
 
 uint32_t GetTime()
 {
-    if (expire_count == 30)
+ 
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+    	{
+    	
+    	expire_count_priv = expire_count;
+    	expiration_array_priv = expiration_array; 
+    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	}
+    	 else {
+    	
+    	expire_count = expire_count_priv;
+    	expiration_array = expiration_array_priv;
+    	}
+    	    if (expire_count == 30)
         expire_count = 0;
     expire_count++;
     return expiration_array[expire_count];
