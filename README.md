@@ -28,18 +28,19 @@ Compiler-frontend alone cannot do the job completely. EaseIO runtime is designed
 Import the code in CCSStudio
 
 @Eren please list down steps for importing the project in CCSstudio
-<ol>
-  <li>Use the llvm-build.sh to download and compile the llvm-9.0.1.</li>
-  <li>Afterwards, put the compiler frontend code in the /llvm/tools/clang/tools/easeIO folder</li>
-  <li>add path of this subdirectory in the cmakelist file located one folder above this one i.e. /llvm/tools/clang/tools .</li>
-  <li>Now run easeIO.sh script to run the transformation for all the codes.</li>
-</ol>
 
 ## Getting Started
 
 For ease-of-use, we have transformed the code for Single timely operation. 
 
 ## Basic Application development with EaseIO
+```c
+int main() {
+  int y = SOME_MACRO_REFERENCE;
+  int x = 5 + 6;
+  cout << "Hello World! " << x << std::endl();
+}
+```
 
 ### Copyright
 MIT License. See the [license](https://github.com/tinysystems/easeIO/blob/main/LICENSE.txt)file for details.
