@@ -57,7 +57,8 @@ void task_temp()
 	
 	sample_priv = sample;
 	avg_temp_priv = avg_temp; 
-	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
 	}
 	 else {
 	
@@ -71,8 +72,6 @@ void task_temp()
     int temp;
 
     while(sample < 1000){
-
-       
 
         	if(!flag[0] && (GetTime() - op_TS[0]) < 10000) {
         	 temp = msp_sample_temperature();
