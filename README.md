@@ -15,7 +15,7 @@ You canperform transformation using the following steps.
   <li>Use the llvm-build.sh to download and compile the llvm-9.0.1.</li>
   <li>Afterwards, put the compiler frontend code in the /llvm/tools/clang/tools/easeIO folder</li>
   <li>Add path of this subdirectory in the cmakelist file located one folder above this one i.e. /llvm/tools/clang/tools .</li>
-  <li>Run make. For subsequent make coomand, you can simply call make easeIO-c</li>
+  <li>Run make. For subsequent make commands, you can simply call make easeIO-c</li>
   <li>Now run easeIO-c.sh script to run the transformation for all the codes.</li>
 </ol>
 
@@ -26,7 +26,7 @@ You can change the path of the LLVM folder and benchmark folders as per location
 The transformed code is then linked with the EaseIO runtime before burning on the microcontroller.
 
 ### How to run it?
-We provide the ready to run project for one of the benchmarks (FIR filter). Following are the steps to run the code. Please note that we use Code Composer Studio to run the project. 
+We provide the ready to run project for one of the benchmarks (FIR filter). Following are the steps to run the code. Please note that we use Code Composer Studio to run the project and tested our benchmarks on Ubuntu20.04 linux environment.  
 
 
   1. Select the [CCSProject](./CCSProject) folder as the workspace and launch
@@ -41,22 +41,23 @@ Hardware Requirement:
 Software Requirements
 - LLVM9.0.1
 
-We have tested our benchmarks on Ubuntu20.04 linux environment. 
 <!---
 ## Getting Started
 
 For ease-of-use, we have transformed the code for Single timely operation. 
 -->
 ## Basic Application development with EaseIO
+In EaseIO-compiler/test/Transformed/ directory, there are sample benchmark applications implemented using EaseIO. The Timely_Temp_Org_transformed.c file is one of our uni-task benchmark applications which shows an example of the <em> Timely</em> re-execution semantic of the EaseIO. The application gets hundred temperature sensor measurements. The time constraint of this application is finishing the task within 10 msec after the sensor is read. If the power failure time interval exceeds 10 ms, then EaseIO runtime gets the temperature value again. Otherwise, EaseIO runtime skips measuring temperature and finishes the remaining part of the task. 
 ```c
 __nv  uint64_t exe_number = 0;
 
 void task_temp()
 {
+    
     int temp;
 
     while(sample < 1000){
-
+        P1OUT = 0x01;
         call_IO("Timely", 10000, temp, msp_sample_temperature());
 
         avg_temp = avg_temp*sample + temp;
@@ -64,12 +65,13 @@ void task_temp()
         avg_temp /= sample;
         TRANSITION_TO(task_init);
     }
-
+    P1OUT = 0x02;
     while(1);
 }
 
 ```
-
+We keep track of the application execution via LEDs on P1.0 (red) and P1.1 (green). During the whole application, you will observe that red LED is turned on. When the application is completed, the red LED turns off and the green one turns on. 
+To intermittently run the application,  <em> INTERMITTENT </em> macro should be defined. The LEDs run the same logic during the intermittent execution. 
 ## Copyright
 MIT License. See the [license](https://github.com/tinysystems/easeIO/blob/main/LICENSE.txt)file for details.
  
