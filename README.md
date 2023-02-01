@@ -9,8 +9,8 @@ EaseIO is a novel programming model that introduces re-execution semantics of IO
 ## Compiler-frontend
 EaseIO compiler-frontend is responsible for performing semantic analysis to inject appropriate code in the original file. 
 
-#### How to run it?
-You perform transformation using the following steps.
+### How to run it?
+You canperform transformation using the following steps.
 <ol>
   <li>Use the llvm-build.sh to download and compile the llvm-9.0.1.</li>
   <li>Afterwards, put the compiler frontend code in the /llvm/tools/clang/tools/easeIO folder</li>
@@ -18,21 +18,7 @@ You perform transformation using the following steps.
   <li>Now run easeIO.sh script to run the transformation for all the codes.</li>
 </ol>
 
-#### Compiler-frontend
-EaseIO compiler-frontend is responsible for performing semantic analysis to inject appropriate code in the original file. 
-
-##### How to run it?
-You perform transformation using the following steps.
-<ol>
-  <li>Use the llvm-build.sh to download and compile the llvm-9.0.1.</li>
-  <li>Afterwards, put the compiler frontend code in the /llvm/tools/clang/tools/easeIO folder</li>
-  <li>add path of this subdirectory in the cmakelist file located one folder above this one i.e. /llvm/tools/clang/tools .</li>
-  <li>Now run easeIO-c.sh script to run the transformation for all the codes.</li>
-</ol>
-
 You can change the path of the LLVM folder and benchmark folders as per location on you machine. However, please make sure you have sperate folders for ==Originals== and ==Transformed==. EaseIO is programmed to keep these two files separate for the ease of use. So the folder for transformed codes should on the same level and path (similar to how it is in the given code structure).
-
- 
 
 #### Runtime
 Compiler-frontend alone cannot do the job completely. EaseIO runtime is designed to complement the frontend.  
