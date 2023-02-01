@@ -48,6 +48,7 @@ We have tested our benchmarks on Ubuntu20.04 linux environment.
 For ease-of-use, we have transformed the code for Single timely operation. 
 -->
 ## Basic Application development with EaseIO
+In EaseIO-compiler/test/Transformed/ directory, there are sample benchmark applications implemented using EaseIO. The Timely_Temp_Org_transformed.c file is one of our uni-task benchmark applications. This application shows an example of the <em> Timely</em> re-execution semantic of the EaseIO. The application basically gets hundred temperature sensor measurements. The time constraint of this application is finishing the task within 10 sec after the sensor is read. If the power failure time interval exceeds 10 ms, then EaseIO runtime gets the temperature value again. Otherwise, EaseIO runtime skips measuring temperature and finishes the remaining part of the task. 
 ```c
 __nv  uint64_t exe_number = 0;
 
@@ -69,7 +70,8 @@ void task_temp()
 }
 
 ```
-
+we keep track of the application execution via LEDs on P1.0 (red) and P1.1 (green). During the whole application, the red LED turns on. When the application is completed, the red turns off, and the green LED turns on. 
+To intermittently run the application,  <em> INTERMITTENT </em> macro should be defined. The LEDs run the same logic during the intermittent execution. But when the red LED starts blinking when the application is completed. The reason for this situation is that power failures still keep occurring.
 ## Copyright
 MIT License. See the [license](https://github.com/tinysystems/easeIO/blob/main/LICENSE.txt)file for details.
  
