@@ -20,7 +20,9 @@ __nv uint8_t *data_src[MEM_SIZE];
 __nv uint8_t *data_dest[MEM_SIZE];
 __nv unsigned int data_size[MEM_SIZE];
 
-/**global_variables*/
+
+__nv uint64_t exe_number_priv;
+
 
 void clear_isDirty() {}
 
@@ -112,7 +114,18 @@ __nv int dma_data_dst[ARR_SIZE] = {[0 ... ARR_SIZE - 1] = 2};
 void task_init()
 {
 
-    exe_number++;
+
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+    	{
+    	
+    	exe_number_priv = exe_number; 
+    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	}
+    	 else {
+    	
+    	exe_number = exe_number_priv;
+    	}
+    	     exe_number++;
 
     TRANSITION_TO(task_signal);
 }
@@ -121,6 +134,11 @@ void task_signal()
 {
     EASEIO_DMA_copy((uint32_t)(&conv2_wm), (uint32_t)(&signalBuffer) , SIGNAL_LENGTH);
 
+	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	} 
+	 else {}
+	 
     TRANSITION_TO(task_filter);
 }
 
@@ -137,8 +155,18 @@ void task_filter()
 
    EASEIO_DMA_copy((uint32_t)(&signalBuffer),(uint32_t)(&input_lea), SIGNAL_LENGTH);
 
+	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	} 
+	 else {}
+	 
    EASEIO_DMA_copy((uint32_t)(&FILTER_COEFFS_EX1), (uint32_t)(&filterCoeffs), sizeof(filterCoeffs));
 
+	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	} 
+	 else {}
+	 
 
    fillParams.length = FIR_LENGTH*2;
    fillParams.value = 0;
@@ -163,15 +191,20 @@ void task_filter()
    while (samples < SIGNAL_LENGTH) {
 
 
-       status = call_IO("Always", msp_copy_q15(&copyParams, &input_lea[samples], &circularBuffer[copyindex]));
-       status = call_IO("Always", msp_fir_q15(&firParams, &circularBuffer[filterIndex], &result[samples]));
-
+       status =
+msp_copy_q15(&copyParams, &input_lea[samples], &circularBuffer[copyindex])       status =
+msp_fir_q15(&firParams, &circularBuffer[filterIndex], &result[samples])
        copyindex ^= FIR_LENGTH;
        filterIndex ^= FIR_LENGTH;
        samples += FIR_LENGTH;
   }
    EASEIO_DMA_copy( (uint32_t)(&result),(uint32_t)(&signalBuffer), SIGNAL_LENGTH);
 
+	if(!DMA_Data.DMA_Privatization[DMACounter-1]){ 
+	DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	} 
+	 else {}
+	 
     TRANSITION_TO(task_done);
 }
 
@@ -179,7 +212,18 @@ void task_filter()
 void task_done()
 {
 
-    while(exe_number<1000){
+
+    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+    	{
+    	
+    	exe_number_priv = exe_number; 
+    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+    	}
+    	 else {
+    	
+    	exe_number = exe_number_priv;
+    	}
+    	     while(exe_number<1000){
         TRANSITION_TO(task_init);
     }
     while(1);

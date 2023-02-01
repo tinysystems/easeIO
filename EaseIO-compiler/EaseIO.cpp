@@ -500,10 +500,13 @@ public:
   void EndSourceFileAction() override {
 //    transfd_code_writer.getEditBuffer(transfd_code_writer.getSourceMgr().getMainFileID()).write(llvm::outs());
     std::error_code error_code;
+    
+    replaceAll(output_file_name,"Originals","Transformed");
+    replaceAll(output_file_name,".c","_transformed.c");
+    
     llvm::raw_fd_ostream outFile(output_file_name, error_code, llvm::sys::fs::F_None);
     transfd_code_writer.getEditBuffer(transfd_code_writer.getSourceMgr().getMainFileID()).write(outFile);
     outFile.close();
-    
   }
 
   std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
@@ -645,16 +648,12 @@ private:
 
 int main(int argc, const char **argv) {
     
-    llvm::errs() << "argc "<<argc<<"\n";
-    if (argc != 3) {
-        llvm::errs() << "Usage: easeIO-c <input-filename along with path> <output-filename along with path> [-I header files]\n";
-        return 1;
-    }
-
-  output_file_name = argv[2];
-
-
+ 
   CommonOptionsParser op(argc, argv, MatcherSampleCategory);
+  
+  const std::vector< std::string > paths = op.getSourcePathList();
+  //errs()<<paths.at(0)<<"\n";
+  output_file_name = paths.at(0);
   ClangTool Tool(op.getCompilations(), op.getSourcePathList());
   Tool.run(newFrontendActionFactory<EaseIO_DMA_FrontendAction>().get());
 
