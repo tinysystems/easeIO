@@ -72,7 +72,7 @@ void task_temp()
 
 ```
 We keep track of the application execution via LEDs on P1.0 (red) and P1.1 (green). During the whole application, the red LED turns on. When the application is completed, the red turns off, and the green LED turns on. 
-To intermittently run the application,  <em> INTERMITTENT </em> macro should be defined. The LEDs run the same logic during the intermittent execution. 
+To intermittently execute the application,  <em> INTERMITTENT </em> macro should be defined. The LEDs run the same logic during the intermittent execution. 
 ## Copyright
 MIT License. See the [license](https://github.com/tinysystems/easeIO/blob/main/LICENSE.txt)file for details.
  
