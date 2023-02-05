@@ -46,7 +46,7 @@ uint32_t GetTime();
 void task_temp()
 {
 
-     P1OUT = 0x01;
+     //P1OUT = 0x01;
 
     int temp;
 
@@ -60,16 +60,16 @@ void task_temp()
         TRANSITION_TO(task_temp);
     }
 
-     P1OUT = 0x02;
+     //P1OUT = 0x02;
 
     while(1);
 }
 
 static void init_hw()
 {
-    P1DIR = 0xFF;
+    //P1DIR = 0xFF;
     msp_watchdog_disable();
-    PM5CTL0 &= ~LOCKLPM5;
+    //PM5CTL0 &= ~LOCKLPM5;
 }
 
 void init()

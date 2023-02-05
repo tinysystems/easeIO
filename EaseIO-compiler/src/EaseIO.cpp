@@ -71,7 +71,7 @@ string DMA_var_priv_func_start_template = "\n\tif(!DMA_Data.DMA_Privatization[DM
 
 string DMA_var_priv_func_end_template = "\n\tif(!DMA_Data.DMA_Privatization[DMACounter-1]){ \n\tDMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;\n\t} \n\t else {}\n\t ";
 
-string clear_flags = "void clear_flags(){  *flags* }";
+string clear_flags = "void Clean_flags(){  *flags* }";
 
 typedef struct 
 {

@@ -22,7 +22,7 @@ __nv bool op_TS[2];
 
 __nv bool flag[2];
 
-__nv uint64_t sample_priv;
+__nv int temp_priv;__nv uint64_t sample_priv;
 __nv volatile uint16_t avg_temp_priv;
 
 void clear_flags(){  flag[0] = FALSE;flag[1] = FALSE; }
@@ -57,8 +57,7 @@ void task_temp()
 	
 	sample_priv = sample;
 	avg_temp_priv = avg_temp; 
-
-	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
 	}
 	 else {
 	
@@ -66,12 +65,14 @@ void task_temp()
 	avg_temp = avg_temp_priv;
 	}
 	 
-#ifdef INTERMITTENT
-     P1OUT = 0x01;
-#endif
+
+     //P1OUT = 0x01;
+
     int temp;
 
     while(sample < 1000){
+
+       
 
         	if(!flag[0] && (GetTime() - op_TS[0]) < 10000) {
         	 temp = msp_sample_temperature();
@@ -87,15 +88,15 @@ void task_temp()
         avg_temp /= sample;
         TRANSITION_TO(task_temp);
     }
-#ifdef INTERMITTENT
-     P1OUT = 0x02;
-#endif
+
+     //P1OUT = 0x02;
+
     while(1);
 }
 
 static void init_hw()
 {
-    //P3DIR = 0xFF;
+    //P1DIR = 0xFF;
     msp_watchdog_disable();
     //PM5CTL0 &= ~LOCKLPM5;
 }
