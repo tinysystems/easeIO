@@ -8,7 +8,7 @@
 #include "DSPLib.h"
 #include "inputs/conv1.h"
 /*EASEIO Libs*/
-#include "libEaseIO/EASEIO.h"
+#include "EASEIO.h"
 #include <libalpaca/alpaca.h>
 #include <libmsp/watchdog.h>
 

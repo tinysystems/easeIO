@@ -8,7 +8,7 @@
 #include "DSPLib.h"
 #include "inputs/conv1.h"
 /*EASEIO Libs*/
-#include "libEaseIO/EASEIO.h"
+#include "EASEIO.h"
 #include <libalpaca/alpaca.h>
 #include <libmsp/watchdog.h>
 
@@ -67,13 +67,13 @@ void task_temp()
 	avg_temp = avg_temp_priv;
 	}
 
-     P1OUT = 0x01;
+
 
     int temp;
 
     while(sample < 1000){
 
-       
+        P1OUT = 0x01;
 
         	if(!flag[0] && (GetTime() - op_TS[0]) < 10000) {
         	 temp = msp_sample_temperature();

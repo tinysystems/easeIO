@@ -6,7 +6,7 @@
 
 #include <libalpaca/alpaca.h>
 #include <libmsp/watchdog.h>
-#include "libEaseIO/EASEIO.h"
+#include "EASEIO.h"
 #include "libPF/PF_sim.h"
 #include "DSPLib.h"
 #include "msp430.h"
