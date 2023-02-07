@@ -7,11 +7,11 @@
 #include <libalpaca/alpaca.h>
 #include <libmsp/watchdog.h>
 #include "EASEIO.h"
-#include "PF_sim.h"
+#include "libPF/PF_sim.h"
 #include "DSPLib.h"
 #include "msp430.h"
 #include <math.h>
-#include "mem.h"
+#include "libmsp/mem.h"
 #include "inputs/conv2.h"
 
 

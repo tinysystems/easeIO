@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "PF_sim.h"
+#include "libPF/PF_sim.h"
 #include "DSPLib.h"
-#include "conv1.h"
+#include "inputs/conv1.h"
 /*EASEIO Libs*/
 #include "EASEIO.h"
 #include <libalpaca/alpaca.h>
