@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "PF_sim.h"
+#include "libPF/PF_sim.h"
 #include "DSPLib.h"
-#include "conv1.h"
+#include "inputs/conv1.h"
 /*EASEIO Libs*/
 #include "EASEIO.h"
 #include <libalpaca/alpaca.h>
@@ -19,13 +19,13 @@
 __nv uint8_t *data_src[MEM_SIZE];
 __nv uint8_t *data_dest[MEM_SIZE];
 __nv unsigned int data_size[MEM_SIZE];
-__nv bool flag[2]
+__nv bool flag[2];
 
-__nv uint64_t Re_exe_number_priv;
 __nv uint64_t exe_number_priv;
-__nv int [3000] dma_data_dst_priv;
-__nv int [3000] dma_data_src_priv;
+__nv int dma_data_dst_priv  [3000];
+__nv int dma_data_src_priv  [3000];
 
+void Clean_flags(){  flag[0] = FALSE;flag[1] = FALSE; }
 
 void clear_isDirty() {}
 int DMA_copy(unsigned int from, unsigned int to, unsigned short size);
@@ -52,22 +52,22 @@ __nv int dma_data_dst[ARR_SIZE] = {[0 ... ARR_SIZE - 1] = 2};
 
 void task_dma()
 {
- 
-        	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-        	{
-        	
-        	exe_number_priv = exe_number;
-        	dma_data_dst_priv = dma_data_dst;
-        	dma_data_src_priv = dma_data_src; 
-        	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-        	}
-        	 else {
-        	
-        	exe_number = exe_number_priv;
-        	dma_data_dst = dma_data_dst_priv;
-        	dma_data_src = dma_data_src_priv;
-        	}
-        	        while (exe_number<1000) {
+	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+	{
+	
+	exe_number_priv = exe_number;
+	or(int i=0 i < *en*i++){ dma_data_dst_priv[i] = dma_data_dst[i];}
+	or(int i=0 i < *en*i++){ dma_data_src_priv[i] = dma_data_src[i];} 
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	}
+	 else {
+	
+	exe_number = exe_number_priv;
+	or(int i=0 i < *en*i++){ dma_data_dst[i] = dma_data_dst_priv[i];}
+	or(int i=0 i < *en*i++){ dma_data_src[i] = dma_data_src_priv[i];}
+	}
+	 
+        while (exe_number<1000) {
 
            
 	if(!flag[0]) { 
@@ -102,18 +102,7 @@ void init()
 
 int DMA_copy(unsigned int from, unsigned int to, unsigned short size)
 {
- 
-    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-    	{
-    	
-    	Re_exe_number_priv = Re_exe_number; 
-    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-    	}
-    	 else {
-    	
-    	Re_exe_number = Re_exe_number_priv;
-    	}
-    	    Re_exe_number++;
+    Re_exe_number++;
 //    __data20_write_long((uintptr_t) &DMA0SA,(uintptr_t) from);
                                             // Source block address
 //    __data20_write_long((uintptr_t) &DMA0DA,(uintptr_t) to);

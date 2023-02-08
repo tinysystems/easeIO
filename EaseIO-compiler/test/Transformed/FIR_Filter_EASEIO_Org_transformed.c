@@ -7,11 +7,11 @@
 #include <libalpaca/alpaca.h>
 #include <libmsp/watchdog.h>
 #include "EASEIO.h"
-#include "PF_sim.h"
+#include "libPF/PF_sim.h"
 #include "DSPLib.h"
 #include "msp430.h"
 #include <math.h>
-#include "mem.h"
+#include "libmsp/mem.h"
 #include "inputs/conv2.h"
 
 
@@ -22,6 +22,7 @@ __nv unsigned int data_size[MEM_SIZE];
 
 
 __nv uint64_t exe_number_priv;
+
 
 
 void clear_isDirty() {}
@@ -113,19 +114,19 @@ __nv int dma_data_dst[ARR_SIZE] = {[0 ... ARR_SIZE - 1] = 2};
 
 void task_init()
 {
+	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+	{
+	
+	exe_number_priv = exe_number; 
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	}
+	 else {
+	
+	exe_number = exe_number_priv;
+	}
+	 
 
-
-    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-    	{
-    	
-    	exe_number_priv = exe_number; 
-    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-    	}
-    	 else {
-    	
-    	exe_number = exe_number_priv;
-    	}
-    	     exe_number++;
+    exe_number++;
 
     TRANSITION_TO(task_signal);
 }
@@ -192,8 +193,10 @@ void task_filter()
 
 
        status =
-msp_copy_q15(&copyParams, &input_lea[samples], &circularBuffer[copyindex])       status =
-msp_fir_q15(&firParams, &circularBuffer[filterIndex], &result[samples])
+msp_copy_q15(&copyParams, &input_lea[samples], &circularBuffer[copyindex]);
+       	       status =
+msp_fir_q15(&firParams, &circularBuffer[filterIndex], &result[samples]);
+       	
        copyindex ^= FIR_LENGTH;
        filterIndex ^= FIR_LENGTH;
        samples += FIR_LENGTH;
@@ -211,19 +214,19 @@ msp_fir_q15(&firParams, &circularBuffer[filterIndex], &result[samples])
 
 void task_done()
 {
+	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+	{
+	
+	exe_number_priv = exe_number; 
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	}
+	 else {
+	
+	exe_number = exe_number_priv;
+	}
+	 
 
-
-    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-    	{
-    	
-    	exe_number_priv = exe_number; 
-    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-    	}
-    	 else {
-    	
-    	exe_number = exe_number_priv;
-    	}
-    	     while(exe_number<1000){
+    while(exe_number<1000){
         TRANSITION_TO(task_init);
     }
     while(1);

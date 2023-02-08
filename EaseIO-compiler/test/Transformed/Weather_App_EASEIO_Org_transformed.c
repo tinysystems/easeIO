@@ -7,11 +7,10 @@
 
 #include <libalpaca/alpaca.h>
 #include <libmsp/watchdog.h>
-#include "PF_sim.h"
+#include "libPF/PF_sim.h"
 #include "DSPLib.h"
 #include "msp430.h"
-#include <math.h>
-#include "mem.h"
+#include "libmsp/mem.h"
 #include "inputs/dnnHeaders.h"
 //#define TEST_SIGNAL
 
@@ -23,9 +22,9 @@ __nv unsigned int data_size[MEM_SIZE];
 
 __nv bool op_TS[2];
 
-__nv bool flag[6]
+__nv bool flag[6];
 
-__nv volatile int temperature_priv;
+__nv int temperature_priv;__nv volatile int temperature_priv;
 __nv volatile int humidity_priv;
 __nv int filter_priv;
 __nv int filters_priv;
@@ -37,6 +36,7 @@ __nv int fc_parses_priv;
 __nv int fc_part_priv;
 __nv uint64_t exe_number_priv;
 
+void Clean_flags(){  flag[0] = FALSE;flag[1] = FALSE;flag[2] = FALSE;flag[3] = FALSE;flag[4] = FALSE;flag[5] = FALSE; }
 
 
 void clear_isDirty() {}
@@ -143,20 +143,20 @@ void task_init()
 
 void task_sense()
 {
- 
-    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-    	{
-    	
-    	temperature_priv = temperature;
-    	humidity_priv = humidity; 
-    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-    	}
-    	 else {
-    	
-    	temperature = temperature_priv;
-    	humidity = humidity_priv;
-    	}
-    	   
+	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+	{
+	
+	temperature_priv = temperature;
+	humidity_priv = humidity; 
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	}
+	 else {
+	
+	temperature = temperature_priv;
+	humidity = humidity_priv;
+	}
+	 
+   
 	if(!flag[0]) { 
     	capture();
     	 flag[0] = SET;
@@ -165,7 +165,7 @@ void task_sense()
 
     	if(!flag[1]) { 
 
-		if(!flag[2] && (GetTime() - op_TS[0]) < 10000)) {
+		if(!flag[2] && (GetTime() - op_TS[0]) < 10000) {
 		 temperature = msp_sample_temperature();
 		 op_TS[0] = GetTime();
 		 temperature_priv = temperature;
@@ -202,21 +202,21 @@ void task_dnn_init()
 
 void task_convol()
 {
+	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+	{
+	
+	filter_priv = filter;
+	filters_priv = filters; 
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	}
+	 else {
+	
+	filter = filter_priv;
+	filters = filters_priv;
+	}
+	 
 
-
-    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-    	{
-    	
-    	filter_priv = filter;
-    	filters_priv = filters; 
-    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-    	}
-    	 else {
-    	
-    	filter = filter_priv;
-    	filters = filters_priv;
-    	}
-    	     /* set the filter coff. and order. if all filters are done goto relu */
+    /* set the filter coff. and order. if all filters are done goto relu */
     if(filter < filters){
         filter++;
         TRANSITION_TO(task_convol_mul);
@@ -228,21 +228,21 @@ void task_convol()
 
 void task_convol_mul()
 {
+	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+	{
+	
+	filter_priv = filter;
+	status_priv = status; 
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	}
+	 else {
+	
+	filter = filter_priv;
+	status = status_priv;
+	}
+	 
 
-
-    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-    	{
-    	
-    	filter_priv = filter;
-    	status_priv = status; 
-    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-    	}
-    	 else {
-    	
-    	filter = filter_priv;
-    	status = status_priv;
-    	}
-    	     msp_fir_q15_params firParams;
+    msp_fir_q15_params firParams;
     msp_fill_q15_params fillParams;
     msp_copy_q15_params copyParams;
 
@@ -328,21 +328,21 @@ void task_convol_mul()
 
 void task_relu_div()
 {
+	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+	{
+	
+	relu_divider_priv = relu_divider;
+	relu_counter_priv = relu_counter; 
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	}
+	 else {
+	
+	relu_divider = relu_divider_priv;
+	relu_counter = relu_counter_priv;
+	}
+	 
 
-
-    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-    	{
-    	
-    	relu_divider_priv = relu_divider;
-    	relu_counter_priv = relu_counter; 
-    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-    	}
-    	 else {
-    	
-    	relu_divider = relu_divider_priv;
-    	relu_counter = relu_counter_priv;
-    	}
-    	     if(relu_divider < relu_counter){
+    if(relu_divider < relu_counter){
         relu_divider++;
         TRANSITION_TO(task_relu);
     }
@@ -353,19 +353,19 @@ void task_relu_div()
 
 void task_relu()
 {
+	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+	{
+	
+	relu_divider_priv = relu_divider; 
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	}
+	 else {
+	
+	relu_divider = relu_divider_priv;
+	}
+	 
 
-
-    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-    	{
-    	
-    	relu_divider_priv = relu_divider; 
-    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-    	}
-    	 else {
-    	
-    	relu_divider = relu_divider_priv;
-    	}
-    	     for( int jj = 0; jj < IMAGE_LENGTH/4; jj++) {
+    for( int jj = 0; jj < IMAGE_LENGTH/4; jj++) {
 
         _q15 max = outputBuffer[jj + (relu_divider - 1)*(IMAGE_LENGTH/4)];
         outputBuffer[jj] = (F_LT(max, _Q15(0.0))) ? _Q15(0.0) : max;
@@ -378,23 +378,23 @@ void task_relu()
 
 void task_fc()
 {
+	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+	{
+	
+	fc_parse_priv = fc_parse;
+	fc_parses_priv = fc_parses;
+	fc_part_priv = fc_part; 
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	}
+	 else {
+	
+	fc_parse = fc_parse_priv;
+	fc_parses = fc_parses_priv;
+	fc_part = fc_part_priv;
+	}
+	 
 
-
-    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-    	{
-    	
-    	fc_parse_priv = fc_parse;
-    	fc_parses_priv = fc_parses;
-    	fc_part_priv = fc_part; 
-    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-    	}
-    	 else {
-    	
-    	fc_parse = fc_parse_priv;
-    	fc_parses = fc_parses_priv;
-    	fc_part = fc_part_priv;
-    	}
-    	     if(fc_parse < fc_parses){
+    if(fc_parse < fc_parses){
 
         fc_part++;
 
@@ -406,23 +406,23 @@ void task_fc()
 
 void task_fc_mul()
 {
+	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+	{
+	
+	fc_part_priv = fc_part;
+	fc_parse_priv = fc_parse;
+	status_priv = status; 
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	}
+	 else {
+	
+	fc_part = fc_part_priv;
+	fc_parse = fc_parse_priv;
+	status = status_priv;
+	}
+	 
 
-
-    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-    	{
-    	
-    	fc_part_priv = fc_part;
-    	fc_parse_priv = fc_parse;
-    	status_priv = status; 
-    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-    	}
-    	 else {
-    	
-    	fc_part = fc_part_priv;
-    	fc_parse = fc_parse_priv;
-    	status = status_priv;
-    	}
-    	     msp_matrix_mpy_q15_params mpyParams;
+    msp_matrix_mpy_q15_params mpyParams;
 
     mpyParams.srcACols = IMAGE_LENGTH/2;
     mpyParams.srcARows = 1;
@@ -476,19 +476,19 @@ void task_inference()
 
 void task_send()
 {
+	if(!DMA_Data.DMA_Privatization[DMACounter-1])
+	{
+	
+	exe_number_priv = exe_number; 
+	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
+	}
+	 else {
+	
+	exe_number = exe_number_priv;
+	}
+	 
 
-
-    	if(!DMA_Data.DMA_Privatization[DMACounter-1])
-    	{
-    	
-    	exe_number_priv = exe_number; 
-    	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
-    	}
-    	 else {
-    	
-    	exe_number = exe_number_priv;
-    	}
-    	     for(int volatile j =0; j<1000; j++){
+    for(int volatile j =0; j<1000; j++){
 
      }
 

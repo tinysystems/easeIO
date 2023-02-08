@@ -8,7 +8,7 @@
 #include "DSPLib.h"
 #include "inputs/conv1.h"
 /*EASEIO Libs*/
-#include "libEaseIO/EASEIO.h"
+#include "EASEIO.h"
 #include <libalpaca/alpaca.h>
 #include <libmsp/watchdog.h>
 
@@ -25,7 +25,7 @@ __nv bool flag[2];
 __nv int temp_priv;__nv uint64_t sample_priv;
 __nv volatile uint16_t avg_temp_priv;
 
-void clear_flags(){  flag[0] = FALSE;flag[1] = FALSE; }
+void Clean_flags(){  flag[0] = FALSE;flag[1] = FALSE; }
 
 void clear_isDirty() {}
 
@@ -55,14 +55,14 @@ void task_temp()
 	if(!DMA_Data.DMA_Privatization[DMACounter-1])
 	{
 	
-	sample_priv = sample;
-	avg_temp_priv = avg_temp; 
+	or(int i=0 i < *en*i++){ sample_priv[i] = sample[i];}
+	or(int i=0 i < *en*i++){ avg_temp_priv[i] = avg_temp[i];} 
 	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
 	}
 	 else {
 	
-	sample = sample_priv;
-	avg_temp = avg_temp_priv;
+	or(int i=0 i < *en*i++){ sample[i] = sample_priv[i];}
+	or(int i=0 i < *en*i++){ avg_temp[i] = avg_temp_priv[i];}
 	}
 	 
 

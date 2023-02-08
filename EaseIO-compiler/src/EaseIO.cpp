@@ -64,8 +64,10 @@ string private_var_template = "__nv *type* *var_name*_priv;\n";
 string private_var_arr_template = "__nv *type* *var_name*_priv *len*;\n";
 
 string DMA_var_priv_template_if = "\n\t*var_name*_priv = *var_name*;";
+string DMA_arrvar_priv_template_if = "\n\t*var_name*_priv = *var_name*;";
 
 string DMA_var_priv_template_else = "\n\t*var_name* = *var_name*_priv;";
+string DMA_arrvar_priv_template_else = "\n\tor(int i=0 i < *en*i++){ *var_name*[i] = *var_name*_priv[i];}";
 
 string DMA_var_priv_func_start_template = "\n\tif(!DMA_Data.DMA_Privatization[DMACounter-1])\n\t{\n\t*if_template* \n\r\t DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;\n\t}\n\t else {\n\t*else_template*\n\t}\n\t ";
 
@@ -125,14 +127,17 @@ string getAllGlobalVariables(){
      final_res = final_res + flag_decl_template+"\n";
    }
  
-
    string s ="";
+   
+   if(flag_itr>0){
+   s=clear_flags;
    for (int i=0;i<=flag_itr;i++){
         s+="flag["+std::to_string(i)+"] = FALSE;";
    }
      replaceAll(clear_flags,"*flags*",s);
+   }
 
-   return final_res+"\n"+private_var_list+"\n"+clear_flags;
+   return final_res+"\n"+private_var_list+"\n"+s;
 }
 
 int extractCallArguments(const CallExpr *call, string *argv){
@@ -401,6 +406,7 @@ public:
 private:
   string dma_priv;
   SourceLocation DMA_func_start;
+
   string getDMAPrivCodeString(GV_to_Func_Map *arr, int size, string fName){
   string res_if = "";
   string res_else = "";
@@ -412,23 +418,30 @@ private:
        if(arr[i].funcName==fName)
         {      
     	   for(int j=0; j < arr[i].sizeOfVarList ;j++){
-      	        res_if += DMA_var_priv_template_if;
-      	        res_else += DMA_var_priv_template_else;
       	        
-    		replaceAll(res_if,"*var_name*",arr[i].variableList[j]);
-		replaceAll(res_else,"*var_name*",arr[i].variableList[j]);
-		if(arr[i].datatypes[j].find("[")!=string::npos){
-		res_priv = private_var_arr_template;
-		errs()<< "type "<<arr[i].datatypes[j].substr(arr[i].datatypes[j].find(" ")+arr[i].datatypes[j].length())<<"\n";
-       	replaceAll(res_priv,"*type*",arr[i].datatypes[j]);
-       	replaceAll(res_priv,"*len*",arr[i].datatypes[j].substr(arr[i].datatypes[j].find(" ")+arr[i].datatypes[j].length()));       	
+   		if(arr[i].datatypes[j].find("[")!=string::npos){
+        	        res_if += DMA_var_rr_priv_template_if;
+       	        res_else += DMA_var_rr_priv_template_else;
+
+			res_priv = private_var_arr_template;
+			errs()<< "arr datatype"<<arr[i].datatypes[j]<<"\n";
+			string type = arr[i].datatypes[j].substr(0, arr[i].datatypes[j].find(" "));
+			string len = arr[i].datatypes[j].substr(arr[i].datatypes[j].find(" "), arr[i].datatypes[j].length());				
+			errs()<< "type "<<type<<"\n";
+			errs()<< "len "<<len<<"\n";		
+	       	replaceAll(res_priv,"*type*",type);
+	       	replaceAll(res_priv,"*len*",len);       	
        	
 		}
 		else{
+      	        res_if += DMA_var_priv_template_if;
+      	        res_else += DMA_var_priv_template_else;
       	        res_priv = private_var_template;
              	replaceAll(res_priv,"*type*",arr[i].datatypes[j]);
       	        }
-                replaceAll(res_priv,"*var_name*",arr[i].variableList[j]);
+    		replaceAll(res_if,"*var_name*",arr[i].variableList[j]);
+		replaceAll(res_else,"*var_name*",arr[i].variableList[j]);
+               replaceAll(res_priv,"*var_name*",arr[i].variableList[j]);
 		
 
 		
