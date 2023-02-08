@@ -23,7 +23,7 @@ __nv unsigned int data_size[MEM_SIZE];
 
 __nv uint64_t exe_number_priv;
 
-
+void Clean_flags(){   }
 
 void clear_isDirty() {}
 

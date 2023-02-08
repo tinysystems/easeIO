@@ -24,8 +24,7 @@ __nv bool op_TS[2];
 
 __nv bool flag[6];
 
-__nv int temperature_priv;__nv volatile int temperature_priv;
-__nv volatile int humidity_priv;
+__nv int temperature_priv;__nv volatile int humidity_priv;
 __nv int filter_priv;
 __nv int filters_priv;
 __nv msp_status status_priv;

@@ -127,20 +127,25 @@ string getAllGlobalVariables(){
      final_res = final_res + flag_decl_template+"\n";
    }
  
-   string s ="";
-   
+   string s ="",s_2="";
+   s_2=clear_flags;   
+
    if(flag_itr>0){
-   s=clear_flags;
+
    for (int i=0;i<=flag_itr;i++){
         s+="flag["+std::to_string(i)+"] = FALSE;";
    }
-     replaceAll(clear_flags,"*flags*",s);
-   }
 
-   return final_res+"\n"+private_var_list+"\n"+s;
+   }
+   
+   replaceAll(s_2,"*flags*",s);
+   
+   errs()<<"var list"<< private_var_list<<" \n";
+
+   return final_res+"\n"+private_var_list+"\n"+s_2;
 }
 
-int extractCallArguments(const CallExpr *call, string *argv){
+int extractCallArguments(const CallExpr *call, string *argv, string *argtype){
   int len_of_call = 0;
   int argc = call->getNumArgs();
   LangOptions LangOpts;
@@ -154,6 +159,7 @@ int extractCallArguments(const CallExpr *call, string *argv){
         raw_string_ostream s(TypeS);
         call->getArg(i)->printPretty(s, 0, Policy);
         argv[i] = s.str();
+        argtype[i] = call->getArg(i)->getType().getAsString();
         len_of_call = len_of_call + argv[i].length();
     }
   
@@ -168,7 +174,7 @@ int extractCallArguments(const CallExpr *call, string *argv){
 }
 
 
-void replaceArgumentsInTimelyRetValTemplate(string *argv, string &io_call_timely_retval_template, int size){
+void replaceArgumentsInTimelyRetValTemplate(string *argv, string *argtype, string &io_call_timely_retval_template, int size){
    stringstream f_itr,t_itr; string t_temp; string f_temp;
    t_itr<<TS_itr;
    t_itr>>t_temp;
@@ -183,7 +189,7 @@ void replaceArgumentsInTimelyRetValTemplate(string *argv, string &io_call_timely
    replaceAll(io_call_timely_retval_template,"*EXPIRE_TIME*",argv[1]);
    replaceAll(io_call_timely_retval_template,"*retval*",argv[2]);
    replaceAll(io_call_timely_retval_template,"*op_name*",argv[3]);
-   //private_var_list+=
+   private_var_list+= "__nv "+ argtype[2]+" "+argv[2]+"_priv;";
 }
 
 void replaceArgumentsInTimelyTemplate(string *argv, string &io_call_timely_retval_template, int size){
@@ -208,7 +214,6 @@ void replaceArgumentsInSingleTemplate(string *argv, string &io_call_single_templ
    f_itr<<flag_itr;
    f_itr>>f_temp;
    flag_itr++;
-
    replaceAll(io_call_single_template,"*f_itr*",f_temp);
    replaceAll(io_call_single_template,"*op_name*",argv[1]);
 }
@@ -248,6 +253,7 @@ void replaceArgumentsInSingleBlockTemplate(string *argv, string &io_block_begin_
   flag_itr++;
   replaceAll(io_block_begin_single_retval_template,"*f_itr*",temp);
   replaceAll(io_block_end_single_retval_template,"*f_itr*",temp);
+  
 } 
 
 string io_call_name = "call_IO";
@@ -268,12 +274,13 @@ public:
 
   int argc = call->getNumArgs();
   string argv[argc];
+  string argtype[argc];
   
-  extractCallArguments(call, argv);
+  extractCallArguments(call, argv,argtype);
   
   if(argv[0].find("Timely") != std::string::npos){
   if(argc == 4)
-    replaceArgumentsInTimelyRetValTemplate(argv,io_call_timely_retval_template, argc);
+    replaceArgumentsInTimelyRetValTemplate(argv,argtype,io_call_timely_retval_template, argc);
   else  if(argc == 3)
     replaceArgumentsInTimelyTemplate(argv,io_call_timely_template, argc);
       
@@ -319,8 +326,10 @@ public:
   
   int argc = call->getNumArgs();
   string argv[argc];
+  string argtype[argc];
   
-  extractCallArguments(call, argv);
+  extractCallArguments(call, argv,argtype);
+  
 
   // Add additional code
   if(argv[0].find("Timely") != std::string::npos){
@@ -355,8 +364,10 @@ public:
   
   int argc = call->getNumArgs();
   string argv[argc];
+    string argtype[argc];
   
-  extractCallArguments(call, argv);
+  extractCallArguments(call, argv,argtype);
+  
   
   transfd_code_writer.InsertText(call->getBeginLoc(), io_block_end_temp, true, true);  	//io_call_timely_retval_template.replace(index, len_of_call,);
   }  
@@ -380,7 +391,6 @@ public:
         
         //for each function check if the function is in the list modifying global variables. if yes add DM privatization logic
        if (functionIsModifyingGV(functionList, sizeOfFuncList, funcName)) {
-
         // add privatization logic at the start of the function. 
         
         dma_priv = getDMAPrivCodeString(functionList, sizeOfFuncList, funcName); 
@@ -406,13 +416,12 @@ public:
 private:
   string dma_priv;
   SourceLocation DMA_func_start;
-
   string getDMAPrivCodeString(GV_to_Func_Map *arr, int size, string fName){
   string res_if = "";
   string res_else = "";
   string res_priv = "";
   string final_res = DMA_var_priv_func_start_template;
-  std::size_t found;
+  std::size_t found;  std::size_t varNamefound;
     for(int i=0;i<size;i++)
     {
        if(arr[i].funcName==fName)
@@ -424,13 +433,14 @@ private:
        	        res_else += DMA_var_rr_priv_template_else;
 
 			res_priv = private_var_arr_template;
-			errs()<< "arr datatype"<<arr[i].datatypes[j]<<"\n";
 			string type = arr[i].datatypes[j].substr(0, arr[i].datatypes[j].find(" "));
 			string len = arr[i].datatypes[j].substr(arr[i].datatypes[j].find(" "), arr[i].datatypes[j].length());				
-			errs()<< "type "<<type<<"\n";
-			errs()<< "len "<<len<<"\n";		
 	       	replaceAll(res_priv,"*type*",type);
-	       	replaceAll(res_priv,"*len*",len);       	
+	       	replaceAll(res_priv,"*len*",len);   
+	       	replaceAll(len,"[","");    	
+	       	replaceAll(len,"]","");	       	
+    		replaceAll(res_if,"*len*",len);
+		replaceAll(res_else,"*len*",len);
        	
 		}
 		else{
@@ -443,10 +453,11 @@ private:
 		replaceAll(res_else,"*var_name*",arr[i].variableList[j]);
                replaceAll(res_priv,"*var_name*",arr[i].variableList[j]);
 		
-
+		errs()<<" "<<res_priv<<" \n";
 		
 		found = private_var_list.find(res_priv);
-		if (found==std::string::npos)
+		varNamefound = private_var_list.find(arr[i].variableList[j]);
+		if (found==std::string::npos && varNamefound==std::string::npos)
 		   private_var_list += res_priv;	
     	   }
     	   break;
@@ -535,10 +546,10 @@ public:
   void EndSourceFileAction() override {
 //    transfd_code_writer.getEditBuffer(transfd_code_writer.getSourceMgr().getMainFileID()).write(llvm::outs());
     std::error_code error_code;
-    
+//    errs()<<" before transform \n\n";    
     replaceAll(output_file_name,"Originals","Transformed");
     replaceAll(output_file_name,".c","_transformed.c");
-    
+//    errs()<<" reached here \n\n";
     llvm::raw_fd_ostream outFile(output_file_name, error_code, llvm::sys::fs::F_None);
     transfd_code_writer.getEditBuffer(transfd_code_writer.getSourceMgr().getMainFileID()).write(outFile);
     outFile.close();

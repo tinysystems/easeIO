@@ -55,14 +55,14 @@ void task_temp()
 	if(!DMA_Data.DMA_Privatization[DMACounter-1])
 	{
 	
-	or(int i=0 i < *en*i++){ sample_priv[i] = sample[i];}
-	or(int i=0 i < *en*i++){ avg_temp_priv[i] = avg_temp[i];} 
+	sample_priv = sample;
+	avg_temp_priv = avg_temp; 
 	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
 	}
 	 else {
 	
-	or(int i=0 i < *en*i++){ sample[i] = sample_priv[i];}
-	or(int i=0 i < *en*i++){ avg_temp[i] = avg_temp_priv[i];}
+	sample = sample_priv;
+	avg_temp = avg_temp_priv;
 	}
 	 
 

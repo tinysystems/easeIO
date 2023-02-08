@@ -56,15 +56,15 @@ void task_dma()
 	{
 	
 	exe_number_priv = exe_number;
-	or(int i=0 i < *en*i++){ dma_data_dst_priv[i] = dma_data_dst[i];}
-	or(int i=0 i < *en*i++){ dma_data_src_priv[i] = dma_data_src[i];} 
+	for(int i=0;i <  3000;i++){ dma_data_dst_priv[i] = dma_data_dst[i];}
+	for(int i=0;i <  3000;i++){ dma_data_src_priv[i] = dma_data_src[i];} 
 	 DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;
 	}
 	 else {
 	
 	exe_number = exe_number_priv;
-	or(int i=0 i < *en*i++){ dma_data_dst[i] = dma_data_dst_priv[i];}
-	or(int i=0 i < *en*i++){ dma_data_src[i] = dma_data_src_priv[i];}
+	for(int i=0;i <  3000;i++){ dma_data_dst[i] = dma_data_dst_priv[i];}
+	for(int i=0;i <  3000;i++){ dma_data_src[i] = dma_data_src_priv[i];}
 	}
 	 
         while (exe_number<1000) {
