@@ -64,10 +64,10 @@ string private_var_template = "__nv *type* *var_name*_priv;\n";
 string private_var_arr_template = "__nv *type* *var_name*_priv *len*;\n";
 
 string DMA_var_priv_template_if = "\n\t*var_name*_priv = *var_name*;";
-string DMA_arrvar_priv_template_if = "\n\t*var_name*_priv = *var_name*;";
+string DMA_var_rr_priv_template_if = "\n\tfor(int i=0;i < *len*;i++){ *var_name*_priv[i] = *var_name*[i];}";
 
 string DMA_var_priv_template_else = "\n\t*var_name* = *var_name*_priv;";
-string DMA_arrvar_priv_template_else = "\n\tor(int i=0 i < *en*i++){ *var_name*[i] = *var_name*_priv[i];}";
+string DMA_var_rr_priv_template_else = "\n\tfor(int i=0;i < *len*;i++){ *var_name*[i] = *var_name*_priv[i];}";
 
 string DMA_var_priv_func_start_template = "\n\tif(!DMA_Data.DMA_Privatization[DMACounter-1])\n\t{\n\t*if_template* \n\r\t DMA_Data.DMA_Privatization[DMACounter-1] = COMPLETED;\n\t}\n\t else {\n\t*else_template*\n\t}\n\t ";
 
