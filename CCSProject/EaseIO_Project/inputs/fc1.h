@@ -5,7 +5,6 @@
 
 #define FC1_WMH_LEN 5456
 
-
 __ro_hifram fixed fc1_wmh[5456] = {
     F_LIT(-0.216094523668),   F_LIT(-0.195210695267),
     F_LIT(-0.105914995074),   F_LIT(0.40433254838),
