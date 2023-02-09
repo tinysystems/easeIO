@@ -1,6 +1,6 @@
 #ifndef INPUT_H
 #define INPUT_H
-#include <mem.h>
+#include <libmsp/mem.h>
 #include <libfixed/fixed.h>
 
 __ro_hifram _q15 input[1][28][28] = {_Q15(0.0),

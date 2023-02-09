@@ -80,7 +80,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Benchmarks/Timely_Temp_Org.c|Benchmarks/FIR_Filter_EASEIO_Org_transformed.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Benchmarks/FIR_Filter_EASEIO_Exclude_Org_transformed.c|Benchmarks/Timely_Temp_Org_transformed.c|Benchmarks/Timely_Temp_Org.c|Benchmarks/FIR_Filter_EASEIO_Org_transformed.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

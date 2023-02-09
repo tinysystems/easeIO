@@ -1,6 +1,6 @@
 #ifndef FC2_H
 #define FC2_H
-#include <mem.h>
+#include <libmsp/mem.h>
 #include <libfixed/fixed.h>
 
 __ro_hifram _q15 fc2_w[10][500] = {

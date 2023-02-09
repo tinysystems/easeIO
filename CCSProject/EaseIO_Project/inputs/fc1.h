@@ -1,6 +1,6 @@
 #ifndef FC1_H
 #define FC1_H
-#include <mem.h>
+#include <libmsp/mem.h>
 #include <libfixed/fixed.h>
 
 #define FC1_WMH_LEN 5456
