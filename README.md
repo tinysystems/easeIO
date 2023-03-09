@@ -13,7 +13,7 @@ EaseIO compiler-frontend is responsible for performing semantic analysis to inje
 You can perform transformation using the following steps and commands.
 <ol>
   <li>Run the following command to install Clang</li>
-      >sudo apt install clang lldb lld
+ > sudo apt install clang lldb lld
   <li>Use the llvm-build.sh to download and compile the llvm-9.0.1.</li>
       >sudo llvm-build.sh 
   <li>Afterwards, put the compiler frontend code in the /llvm/tools/clang/tools/easeIO folder</li>
