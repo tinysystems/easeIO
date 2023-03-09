@@ -1,20 +1,65 @@
 #!/bin/bash
 
+VER="9.0.1"
+DOWNLOAD="wget"
+BUILD_DIR="llvm-9.0.1-build"
+INSTALL_DIR="/usr/bin"
+
+export CC=clang
+export CXX=clang++
+
+if [ -d "$BUILD_DIR" ]; then
+    echo "Build directory $BUILD_DIR already exists!"
+    echo "Exiting..."
+    exit 0
+fi
+
+echo "Creating llvm build dir"
+mkdir "$BUILD_DIR"
+
+pushd "$BUILD_DIR"
+echo "Downloading LLVM components"
+
+# $1 = url, $2 = tar_name, $3 = name
+function download_extract {
+    fn="$1-$VER.src"
+    tarn="$fn.tar.xz"
+    $DOWNLOAD "https://github.com/llvm/llvm-project/releases/download/llvmorg-$VER/$tarn"
+    echo "Untar $tarn"
+    tar -xf "$tarn"
+    rm "$tarn"
+    mv "$fn" "$1"
+}
+
+download_extract "llvm"
+
+pushd llvm/tools
+download_extract "clang"
+popd
+
+pushd llvm/projects
 
 
-FILENAME="FIR_Filter_EASEIO_Org"
+popd
 
-LLVMHOME=/home/saad/llvm # take this as input
-LLVMBUILD=/home/saad/llvm/build # take this as input  
-CODEBASE=/home/saad/easeIO/EaseIO-codebase/Benchmarks/Original # where original codes are located
-TARGET_FOLDER=/home/saad/easeIO/EaseIO-codebase/Benchmarks/Transformed # where transformed codes will go.
-TARGET_FILENAME=transformed_$FILENAME # name of the file being transformed
+echo "Building LLVM"
+mkdir "build"
+pushd "build"
+cmake  \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DLLVM_TARGETS_TO_BUILD="MSP430" \
+    -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=MSP430 \
+    -DLLVM_BUILD_TESTS=OFF \
+    -DLLVM_BUILD_DOCS=OFF \
+    -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR \
+    ../llvm
 
-INCLUDES="-I$LLVMHOME/llvm/tools/clang/include/ -I$LLVMHOMEHOME/llvm/include -I$LLVMHOME/build/tools/clang/include -I$HOME/build/include -I$HOME/test -I$HOME/test/libmsp -I$HOME/dsplib/include -I$CODEBASE/dsplib/source/vector -I$CODEBASE/inputs/ -I$CODEBASE/libmsp/ -I/$CODEBASE/libalpaca/" 
+make -j8
+make install
 
-$LLVMBUILD/bin/easeIO-c "$CODEBASE/Originals/($FILENAME).c -- $INCLUDES -c"
+popd
 
-
+popd
 
 echo "Done"
 

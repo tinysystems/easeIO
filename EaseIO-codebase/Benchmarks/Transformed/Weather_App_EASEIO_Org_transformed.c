@@ -23,7 +23,7 @@ __nv unsigned int data_size[MEM_SIZE];
 
 __nv bool op_TS[2];
 
-__nv bool flag[6]
+__nv bool flag[6];
 
 __nv volatile int temperature_priv;
 __nv volatile int humidity_priv;
@@ -165,7 +165,7 @@ void task_sense()
 
     	if(!flag[1]) { 
 
-		if(!flag[2] && (GetTime() - op_TS[0]) < 10000)) {
+		if(!flag[2] && (GetTime() - op_TS[0]) < 10000) {
 		 temperature = msp_sample_temperature();
 		 op_TS[0] = GetTime();
 		 temperature_priv = temperature;
