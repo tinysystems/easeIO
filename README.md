@@ -7,15 +7,20 @@ EaseIO is a novel programming model that introduces re-execution semantics of IO
 <p>EaseIO consists of two main components EaseIO compiler front-end and EaseIO runtime.</p>
  
 ## Compiler-frontend
-EaseIO compiler-frontend is responsible for performing semantic analysis to inject appropriate code in the original file. 
+EaseIO compiler-frontend is responsible for performing semantic analysis to inject appropriate code in the original file.
 
 ### How to run it?
-You canperform transformation using the following steps.
+You can perform transformation using the following steps and commands.
 <ol>
+  <li>Run the following command to install Clang</li>
+      > sudo apt install clang lldb lld
   <li>Use the llvm-build.sh to download and compile the llvm-9.0.1.</li>
+      > sudo llvm-build.sh 
   <li>Afterwards, put the compiler frontend code in the /llvm/tools/clang/tools/easeIO folder</li>
-  <li>Add path of this subdirectory in the cmakelist file located one folder above this one i.e. /llvm/tools/clang/tools .</li>
+  <li>Add path of this subdirectory in the cmakelist file located one folder above this one i.e. /llvm/tools/clang/tools.</li>
   <li>Run make. For subsequent make commands, you can simply call make easeIO-c</li>
+      > cd /easeIO/llvm-9.0.1-build/build
+      > sudo make 
   <li>Now run easeIO-c.sh script to run the transformation for all the codes.</li>
 </ol>
 
