@@ -18,7 +18,7 @@ You can perform transformation using the following steps and commands.
       >sudo llvm-build.sh 
   <li>Afterwards, put the compiler frontend code in the /llvm/tools/clang/tools/easeIO folder</li>
   <li>Add path of this subdirectory in the cmakelist file located one folder above this one i.e. /llvm/tools/clang/tools.</li>
-  <li>Run make. For subsequent make commands, you can simply call make easeIO-c</li>
+  <li>Run make using the following command. For subsequent make commands, you can simply call ``make easeIO-c''</li>
       >cd /easeIO/llvm-9.0.1-build/build
       >sudo make 
   <li>Now run easeIO-c.sh script to run the transformation for all the codes.</li>
