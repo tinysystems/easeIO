@@ -3,6 +3,7 @@
 This repository contains the code associated with the paper #19 "Efficient and Safe I/O Operations for Intermittent Systems".
 
 DOI: https://doi.org/10.1145/3552326.3587435
+
 AE Version: https://github.com/tinysystems/easeIO/commit/1136f0c6c051516f77291383a93d4e6e7ca03ce2
 
 EaseIO is a novel programming model that introduces re-execution semantics of IO operations for intermittent computing. Re-executed IO operations in intermittent systems' tasks might lead to memory inconsistencies and high energy consumption. EaseIO offers new interfaces to call IO functions to overcome memory inconsistencies and save energy. Programmers can call IO functions with re-execution semantics annotations thanks to the EaseIO interfaces. 
